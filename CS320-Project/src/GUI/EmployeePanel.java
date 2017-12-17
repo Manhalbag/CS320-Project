@@ -187,7 +187,7 @@ public class EmployeePanel extends JPanel {
 
 					public void actionPerformed(ActionEvent e) {
 
-						JOptionPane.showMessageDialog(null, "Your order is completed.\nTotal price is "
+						JOptionPane.showMessageDialog(null, "The sale is completed.\nTotal price is "
 								+ String.format("%.2f", totalPrice) + " TL");
 
 						removeAll();
