@@ -9,8 +9,13 @@ import javax.swing.JTabbedPane;
 
 
 public class Gui {
-
-	public static void main(String[] args) {
+	
+	//Gui takes an int type that specifies whether the logged in user is an employee or the administrator.
+	//type can be 1 or 0, where 1 is an employee and 0 is the administrator.
+	/**
+	 * @wbp.parser.entryPoint
+	 */
+	public static void Gui(int type) {
 		
 		
 		JFrame frame = new JFrame("Supermarket Management System");
@@ -19,16 +24,14 @@ public class Gui {
 		frame.setSize(650, 500);
 		frame.setMinimumSize(new Dimension(650, 500));
 		
-		JTabbedPane tabbedPane = new JTabbedPane();
-		
-		JPanel employeePanel = new EmployeePanel();
-		tabbedPane.add("Employee", employeePanel);
-		
-		JPanel managerPanel = new ManagerPanel();
-		tabbedPane.add("Manager", managerPanel);
-		
-		
-		frame.add(tabbedPane);
+		if(type==0) {
+			JPanel managerPanel = new ManagerPanel();
+			frame.getContentPane().add(managerPanel);
+		}
+		else {
+			JPanel employeePanel = new EmployeePanel();
+			frame.getContentPane().add(employeePanel);
+		}
 		
 		frame.pack();
 	    frame.setLocationRelativeTo(null);

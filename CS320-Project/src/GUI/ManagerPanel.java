@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 package GUI;
 
 import java.awt.BorderLayout;
@@ -15,6 +5,7 @@ import java.awt.Color;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -23,6 +14,7 @@ import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.InputMismatchException;
+import java.awt.FlowLayout;
 
 public class ManagerPanel extends JPanel {
 	private JButton listEmployeesButton;
@@ -31,18 +23,28 @@ public class ManagerPanel extends JPanel {
 	private JButton calculateExpenseButton;
 	private JPanel buttonsPanel;
 	private JPanel centerPanel;
+	private JButton button;
+	private JComboBox employeeBox;
+
 
 	public ManagerPanel() {
-		setLayout(new BorderLayout());
+		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		buttonsPanel = new JPanel();
-		add(buttonsPanel, BorderLayout.NORTH);
+		add(buttonsPanel);
 		centerPanel = new JPanel();
-		add(centerPanel, BorderLayout.CENTER);
+		add(centerPanel);
 
 		listEmployeesButton = new JButton("List Employees");
 		hireEmployeeButton = new JButton("Hire Employee");
 		fireEmployeeButton = new JButton("Fire Employee");
 		calculateExpenseButton = new JButton("Calculate Expense");
+		
+		button = new JButton("Add Product");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		buttonsPanel.add(button);
 		buttonsPanel.add(listEmployeesButton);
 		buttonsPanel.add(hireEmployeeButton);
 		buttonsPanel.add(fireEmployeeButton);
@@ -158,7 +160,7 @@ public class ManagerPanel extends JPanel {
 						}else{
 							try {
 								
-								JOptionPane.showMessageDialog(null, "Cook was added successfully");
+								JOptionPane.showMessageDialog(null, "Employee was added successfully");
 								nameText.setText("");
 								salaryText.setText("");
 							} catch (NumberFormatException e2) {
@@ -195,28 +197,21 @@ public class ManagerPanel extends JPanel {
 				topPanel.add(rightPanel);
 
 				leftPanel.setLayout(new GridLayout(2, 1));
-				leftPanel.add(new JLabel("Name: "));
+				employeeBox = new JComboBox();
+				employeeBox.addItem("");
+				leftPanel.add(employeeBox);
 
 				rightPanel.setLayout(new GridLayout(2, 1));
-				JTextField nameText = new JTextField();
-				rightPanel.add(nameText);
-				JButton addButton = new JButton("Add");
-				rightPanel.add(addButton);
+
+				JButton fireButton = new JButton("Fire Employee");
+				rightPanel.add(fireButton);
 
 				centerPanel.revalidate();
 
-				addButton.addActionListener(new ActionListener() {
-
+				fireButton.addActionListener(new ActionListener() {
+					
 					public void actionPerformed(ActionEvent e) {
-
-						if (nameText.getText().equals("")) {
-							JOptionPane.showMessageDialog(null, "Error: Enter a name !", "Error", 0, null);
-						} else {
-							
-							JOptionPane.showMessageDialog(null, "Waiter was added successfully");
-							nameText.setText("");
-						}
-
+						JOptionPane.showMessageDialog(null, "Employee was fired successfully");
 					}
 
 				});
