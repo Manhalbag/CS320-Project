@@ -66,7 +66,7 @@ public class Login {
 			
 			int count=1;
 			while(data.next()) {
-				market.products.put(count,new Product(data.getString("name"),data.getInt("ID"),data.getDouble("cost"),data.getDouble("price"),data.getString("type"),data.getInt("amount")));
+				market.products.put(count,new Product(data.getString("name"),data.getInt("ID"),data.getDouble("cost"),data.getDouble("price"),data.getString("type"),data.getInt("amount"), data.getInt("originalAmount")));
 				count++;
 			}
 			

@@ -11,6 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Objects;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -56,7 +60,24 @@ public class EmployeePanel extends JPanel {
 		btnLogout.setBackground(Color.RED);
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
+							
+				  try {
+			    		
+						Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/SMS","root","");
+						
+						Statement command = connection.createStatement();
+						
+			            for(Product p : supermarket.sortedProducts.values()) {
+			            		int data = command.executeUpdate("UPDATE Products SET amount="+p.amount+" WHERE ID="+p.ID);
+			            }
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+		
+				  
+				  	System.exit(0);
+				
 			}
 		});
 		btnLogout.setHorizontalAlignment(SwingConstants.RIGHT);

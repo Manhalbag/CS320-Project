@@ -16,6 +16,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Objects;
 
 public class ManagerPanel extends JPanel {
@@ -228,8 +232,8 @@ public class ManagerPanel extends JPanel {
 						setLayout(new FlowLayout());
 						add(buttonsPanel);
 						buttonsPanel.setVisible(true);
-                        repaint();
-                        totalPrice = 0;
+                         repaint();
+                         totalPrice = 0;
 					}
 				});
 
@@ -480,6 +484,22 @@ public class ManagerPanel extends JPanel {
 		btnLogout.setBackground(Color.RED);
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+			    try {
+		    		
+					Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/SMS","root","");
+					
+					Statement command = connection.createStatement();
+					
+	                for(Product p : supermarket.sortedProducts.values()) {
+	                		int data = command.executeUpdate("UPDATE Products SET amount="+p.amount+" WHERE ID="+p.ID);
+	                }
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				
+				
 				System.exit(0);
 			}
 		});
@@ -549,10 +569,14 @@ public class ManagerPanel extends JPanel {
                                 JOptionPane.showMessageDialog(null, "Item added successfully.");
                                 supermarket.products.put(supermarket.products.size() + 1, new Product(nameText.getText(),
                                         supermarket.products.size() + 1, Double.parseDouble(costText.getText()),
-                                        Double.parseDouble(priceText.getText()), typeText.getText(), Integer.parseInt(amountText.getText())));
+                                        Double.parseDouble(priceText.getText()), typeText.getText(), Integer.parseInt(amountText.getText()) , Integer.parseInt(amountText.getText())));
                                 System.out.println(supermarket.products.size());
                                 supermarket.takeFromBank(Double.parseDouble(costText.getText()) * Double.parseDouble(amountText.getText()));
                                 supermarket.sortProducts();
+
+
+                                
+                                
                             }else {
                                 for(int i = 1; i < supermarket.products.size();i++){
                                     if(supermarket.products.get(i).name.equalsIgnoreCase(nameText.getText())){

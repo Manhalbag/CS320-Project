@@ -10,13 +10,13 @@ public class Product{
     public int originalAmount;
     
 
-    public Product(String pName, int ID, double cost, double price, String type, int amount){
+    public Product(String pName, int ID, double cost, double price, String type, int amount, int originalAmount){
         this.name = pName;
         this.ID = ID;
         this.cost = cost;
         this.price = price;
         this.type = type;
         this.amount = amount;
-        this.originalAmount = amount;
+        this.originalAmount = originalAmount;
     }
 }
