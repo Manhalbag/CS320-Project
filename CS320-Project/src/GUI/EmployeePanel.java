@@ -11,11 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Objects;
-
-import javax.print.attribute.standard.JobMessageFromOperator;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -56,6 +52,7 @@ public class EmployeePanel extends JPanel {
 		buttonsPanel.add(searchProductButton);
 		
 		btnLogout = new JButton("Logout");
+		buttonsPanel.add(btnLogout);
 		btnLogout.setBackground(Color.RED);
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -63,7 +60,6 @@ public class EmployeePanel extends JPanel {
 			}
 		});
 		btnLogout.setHorizontalAlignment(SwingConstants.RIGHT);
-		add(btnLogout);
 
 		saleButton.addActionListener(new ActionListener() {
 
@@ -286,7 +282,7 @@ public class EmployeePanel extends JPanel {
                 currentPanel.setLayout(new BorderLayout());
                 currentPanel.add(scrollPane, BorderLayout.NORTH);
 
-                Object[] row = new Object[6];
+                Object[] row = new Object[7];
 
                 for(Product p : supermarket.sortedProducts.values()) {
                     row[0] = p.name;
@@ -295,6 +291,7 @@ public class EmployeePanel extends JPanel {
                     row[3] = new Double(p.price);
                     row[4] = p.type;
                     row[5] = new Integer(p.amount);
+                    row[6] = new Integer(p.originalAmount);
                     model.addRow(row);
                 }
 
@@ -394,7 +391,7 @@ public class EmployeePanel extends JPanel {
                         bottomPanel.add(exitButton);
                         add(bottomPanel, BorderLayout.SOUTH);
 
-                        Object[] row = new Object[6];
+                        Object[] row = new Object[7];
 
                         for(Product p : supermarket.sortedProducts.values()) {
                             if(Objects.equals(selectedValue, possibleValues[0])){
@@ -405,6 +402,7 @@ public class EmployeePanel extends JPanel {
                                     row[3] = new Double(p.price);
                                     row[4] = new String(p.type);
                                     row[5] = new Integer(p.amount);
+                                    row[6] = new Integer(p.originalAmount);
                                     model.addRow(row);
                                 }
                             }else if(Objects.equals(selectedValue, possibleValues[1])){
@@ -415,6 +413,7 @@ public class EmployeePanel extends JPanel {
                                     row[3] = new Double(p.price);
                                     row[4] = p.type;
                                     row[5] = new Integer(p.amount);
+                                    row[6] = new Integer(p.originalAmount);
                                     model.addRow(row);
                                 }
                             }else {
@@ -425,6 +424,7 @@ public class EmployeePanel extends JPanel {
                                     row[3] = new Double(p.price);
                                     row[4] = new String(p.type);
                                     row[5] = new Integer(p.amount);
+                                    row[6] = new Integer(p.originalAmount);
                                     model.addRow(row);
                                 }
                             }

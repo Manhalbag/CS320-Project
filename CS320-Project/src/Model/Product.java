@@ -7,6 +7,8 @@ public class Product{
     public double price;
     public String type;
     public int amount;
+    public int originalAmount;
+    
 
     public Product(String pName, int ID, double cost, double price, String type, int amount){
         this.name = pName;
@@ -15,5 +17,6 @@ public class Product{
         this.price = price;
         this.type = type;
         this.amount = amount;
+        this.originalAmount = amount;
     }
 }

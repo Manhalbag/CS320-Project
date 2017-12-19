@@ -18,7 +18,7 @@ public class Login {
 
 	private JFrame frmSupermarketManagementSystem;
 	private JTextField txtId;
-	private String [] managers = {"manhal","berk"};
+
 	/**
 	 * Launch the application.
 	 */
@@ -52,7 +52,7 @@ public class Login {
         Product c = new Product("Bleach", 3,1.1,3.5,"utilities",2);
         Product d = new Product("Chicken",4, 1,5,"food",12);
 
-        Employee x = new Manager(1, "Ali", "09:00-17:00", 5000.00, "Manager");
+        Employee x = new Employee(1, "Ali", "09:00-17:00", 5000.00, "Employee");
         Manager t = new Manager(2, "Murat", "10:00-18:00", 4600.00, "Manager");
         Employee v = new Employee(3, "Süreyya", "10:00-18:00", 2600.00, "Employee");
         market.products.put(1, a);
@@ -69,20 +69,26 @@ public class Login {
 		frmSupermarketManagementSystem.setBounds(100, 100, 570, 340);
 		frmSupermarketManagementSystem.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		String [] people = {t.name, x.name,v.name};
+		
 		JButton btnLogin = new JButton("Login");
 //        JRadioButton checkTitle = new JRadioButton("I am a Manager.");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Boolean isMatched = false;
-		    		for(int i=0; i<managers.length; i++) {
-		    			if( txtId.getText().equalsIgnoreCase(managers[i])) {
+				Boolean isManager = false;
+		    		for(int i=0; i<people.length; i++) {
+		    			if(txtId.getText().equalsIgnoreCase(people[i])) {
 		    				isMatched = true;
+		    				if(txtId.getText().equalsIgnoreCase(t.name)){
+		    					isManager = true;
+		    				}
 		    			}
 		    		}
 		    		
 		    		if(isMatched) {
 	    				frmSupermarketManagementSystem.setVisible(false);
-		    			Boolean isManager = true;
+		    			
 		    			//use Gui to 0
 		    			if(isManager) {
 		    				Gui n = new Gui();

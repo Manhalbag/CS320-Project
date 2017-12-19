@@ -31,12 +31,15 @@ public class ManagerPanel extends JPanel {
     private JTable table;
     private String employeeName;
 	private JButton btnLogout;
-
+	private JTextField textProductsSold;
+	private JTextField textRevenue;
+	private JTextField textCost;
+	private JTextField textProfit;
 
 
 	public ManagerPanel(Supermarket supermarket) {
 		buttonsPanel = new JPanel();
-		buttonsPanel.setLayout(new GridLayout(7,1));
+		buttonsPanel.setLayout(new GridLayout(8,1));
         add(buttonsPanel);
 
 		listEmployeesButton = new JButton("List Employees");
@@ -66,7 +69,7 @@ public class ManagerPanel extends JPanel {
 		                bottomPanel.add(exitButton);
 		                add(bottomPanel, BorderLayout.SOUTH);
 		
-		                String[] columnNames = { "Product Name", "Product ID", "Cost", "Price", "Type", "Amount"};
+		                String[] columnNames = { "Product Name", "Product ID", "Cost", "Price", "Type", "Amount", "Original Amount"};
 		
 		                JPanel currentPanel_Main = new JPanel();
 		                add(currentPanel_Main, BorderLayout.CENTER);
@@ -88,7 +91,7 @@ public class ManagerPanel extends JPanel {
 		                currentPanel.setLayout(new BorderLayout());
 		                currentPanel.add(scrollPane, BorderLayout.NORTH);
 		
-		                Object[] row = new Object[6];
+		                Object[] row = new Object[7];
 		
 		                for(Product p : supermarket.sortedProducts.values()) {
 		                    row[0] = p.name;
@@ -97,6 +100,7 @@ public class ManagerPanel extends JPanel {
 		                    row[3] = new Double(p.price);
 		                    row[4] = p.type;
 		                    row[5] = new Integer(p.amount);
+                            row[6] = new Integer(p.originalAmount);
 		                    model.addRow(row);
 		                }
 		
@@ -175,7 +179,7 @@ public class ManagerPanel extends JPanel {
 		
 		                        setLayout(new BorderLayout());
 		
-		                        String[] columnNames = { "Product Name", "Product ID", "Cost", "Price", "Type", "Amount"};
+		                        String[] columnNames = { "Product Name", "Product ID", "Cost", "Price", "Type", "Amount", "Original Amount"};
 		
 		                        JPanel currentPanel_Main = new JPanel();
 		                        add(currentPanel_Main, BorderLayout.CENTER);
@@ -204,7 +208,7 @@ public class ManagerPanel extends JPanel {
 		                        bottomPanel.add(exitButton);
 		                        add(bottomPanel, BorderLayout.SOUTH);
 		
-		                        Object[] row = new Object[6];
+		                        Object[] row = new Object[7];
 		
 		                        for(Product p : supermarket.sortedProducts.values()) {
 		                            if(Objects.equals(selectedValue, possibleValues[0])){
@@ -215,6 +219,7 @@ public class ManagerPanel extends JPanel {
 		                                    row[3] = new Double(p.price);
 		                                    row[4] = p.type;
 		                                    row[5] = new Integer(p.amount);
+		                                    row[6] = new Integer(p.originalAmount);
 		                                    model.addRow(row);
 		                                }
 		                            }else if(Objects.equals(selectedValue, possibleValues[1])){
@@ -225,6 +230,8 @@ public class ManagerPanel extends JPanel {
 		                                    row[3] = new Double(p.price);
 		                                    row[4] = p.type;
 		                                    row[5] = new Integer(p.amount);
+		                                    row[6] = new Integer(p.originalAmount);
+
 		                                    model.addRow(row);
 		                                }
 		                            }else {
@@ -235,6 +242,7 @@ public class ManagerPanel extends JPanel {
 		                                    row[3] = new Double(p.price);
 		                                    row[4] = p.type;
 		                                    row[5] = new Integer(p.amount);
+		                                    row[6] = new Integer(p.originalAmount);
 		                                    model.addRow(row);
 		                                }
 		                            }
@@ -312,6 +320,7 @@ public class ManagerPanel extends JPanel {
                 JTextField priceText = new JTextField();
                 JTextField typeText = new JTextField();
                 JTextField amountText = new JTextField();
+
                 rightPanel.add(IDText);
                 rightPanel.add(nameText);
                 rightPanel.add(costText);
@@ -430,7 +439,92 @@ public class ManagerPanel extends JPanel {
 		viewFinancialStatusButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
+		
+		                buttonsPanel.setVisible(false);
+		                setLayout(new FlowLayout());
+		
+		              
+		
+		                String[] columnNames = { "Product Name", "Product ID", "Cost", "Price", "Type", "Amount", "Original Amount"};
+		
+		                JPanel currentPanel_Main = new JPanel();
+		                add(currentPanel_Main, FlowLayout.CENTER);
+		                currentPanel_Main.setLayout(new FlowLayout());
+		                currentPanel_Main.add(new JLabel(""), FlowLayout.LEFT);
+		
+		                JPanel currentPanel = new JPanel();
+		                currentPanel_Main.add(currentPanel, FlowLayout.CENTER);
+		                currentPanel.setLayout(new GridLayout(4,2));
 
+		                ////////////////////////////////////////////
+		                ////////////////////////////////////////////
+		                ////////////////////////////////////////////
+		                ////////////////////////////////////////////
+		                ////////////////////////////////////////////
+                    Double revenue = 0.0;
+                    Double cost = 0.0;
+                    int productsSold = 0;
+                    
+	                for(Product p : supermarket.sortedProducts.values()) {
+                        revenue += (new Double(p.price))*(p.originalAmount-p.amount);
+                        cost += (new Double(p.cost))*(p.originalAmount-p.amount);
+                        productsSold += (p.originalAmount-p.amount);
+	                }
+	                Double profit = revenue - cost;	
+		                
+		            JLabel lblProductsSold = new JLabel("Products Sold  :");
+		        		JLabel lblRevenue = new JLabel("Revenue  :");
+		        		JLabel lblCost = new JLabel("Cost  :");
+		        		JLabel lblProfit = new JLabel("Profit  :");
+		        		
+		        		textProductsSold = new JTextField();
+		        		textProductsSold.setEditable(false);
+		        		textProductsSold.setColumns(10);
+		        		textProductsSold.setText(""+productsSold);
+		        		
+		        		textRevenue = new JTextField();
+		        		textRevenue.setEditable(false);
+		        		textRevenue.setColumns(10);
+		        		textRevenue.setText(""+revenue);
+
+		        		
+		        		textCost = new JTextField();
+		        		textCost.setEditable(false);
+		        		textCost.setColumns(10);
+		        		textCost.setText(""+cost);
+
+		        		
+		        		textProfit = new JTextField();
+		        		textProfit.setEditable(false);
+		        		textProfit.setColumns(10);
+		        		textProfit.setText(""+profit);
+
+		        		
+		        		currentPanel.add(lblProductsSold);
+		        		currentPanel.add(textProductsSold);
+		        		currentPanel.add(lblRevenue);
+		        		currentPanel.add(textRevenue);
+		        		currentPanel.add(lblCost);
+		        		currentPanel.add(textCost);
+		        		currentPanel.add(lblProfit);
+		        		currentPanel.add(textProfit);
+		                
+		        		exitButton = new JButton("Close");
+			        JPanel bottomPanel = new JPanel();
+		 	        bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+		 	        exitButton.setEnabled(true);
+	                bottomPanel.add(exitButton);
+	                add(bottomPanel, FlowLayout.LEFT);		        		
+	                exitButton.addActionListener(new ActionListener() {
+	                    @Override
+	                    public void actionPerformed(ActionEvent actionEvent) {
+	                        removeAll();
+	                        setLayout(new FlowLayout());
+	                        add(buttonsPanel);
+	                        buttonsPanel.setVisible(true);
+	                        repaint();
+	                    }
+	                });
 			}
 
 		});
