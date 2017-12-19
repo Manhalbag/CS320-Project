@@ -20,6 +20,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Color;
 
 public class EmployeePanel extends JPanel {
 	
@@ -39,6 +40,7 @@ public class EmployeePanel extends JPanel {
 	private double price;
 	private String itemName;
 	private int count = 1;
+	private JButton btnLogout;
 
 	public EmployeePanel(Supermarket supermarket) {
 
@@ -52,6 +54,16 @@ public class EmployeePanel extends JPanel {
 		buttonsPanel.add(saleButton);
 		buttonsPanel.add(listProductsButton);
 		buttonsPanel.add(searchProductButton);
+		
+		btnLogout = new JButton("Logout");
+		btnLogout.setBackground(Color.RED);
+		btnLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		btnLogout.setHorizontalAlignment(SwingConstants.RIGHT);
+		add(btnLogout);
 
 		saleButton.addActionListener(new ActionListener() {
 
