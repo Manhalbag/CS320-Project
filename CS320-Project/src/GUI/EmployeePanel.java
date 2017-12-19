@@ -1,5 +1,8 @@
 package GUI;
 
+import Model.Product;
+import Model.Supermarket;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -10,30 +13,25 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Objects;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.SpinnerNumberModel;
+import javax.print.attribute.standard.JobMessageFromOperator;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
-
-
 public class EmployeePanel extends JPanel {
 	
 	private JButton saleButton;
-	
+    private JButton listProductsButton;
+    private JButton searchProductButton;
 
+    private JButton exitButton;
 	private JButton finalizeButton;
 	private JLabel priceLabel;
-	private JButton addButton;
+    private JPanel buttonsPanel;
+    private JButton addButton;
 	private JComboBox boxes;
 	private JSpinner spinner;
 	private JTable table;
@@ -41,27 +39,39 @@ public class EmployeePanel extends JPanel {
 	private double price;
 	private String itemName;
 	private int count = 1;
-	private JPanel panel = new JPanel();
 
-	public EmployeePanel() {
+	public EmployeePanel(Supermarket supermarket) {
 
+
+        buttonsPanel = new JPanel();
+        add(buttonsPanel);
 		saleButton = new JButton("New Sale");
+        listProductsButton = new JButton("List Products");
+        searchProductButton = new JButton("Search Product");
 
-		add(saleButton);
+		buttonsPanel.add(saleButton);
+		buttonsPanel.add(listProductsButton);
+		buttonsPanel.add(searchProductButton);
 
 		saleButton.addActionListener(new ActionListener() {
 
+            double totalPrice = 0;
+            @Override
 			public void actionPerformed(ActionEvent e) {
 
-				remove(saleButton);
+//				remove(saleButton);
+			    buttonsPanel.setVisible(false);
 
 				setLayout(new BorderLayout());
 
 				JPanel bottomPanel = new JPanel();
 				bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+				exitButton = new JButton("Close");
 				finalizeButton = new JButton("Finalize");
 				finalizeButton.setEnabled(false);
+				exitButton.setEnabled(true);
 				bottomPanel.add(finalizeButton);
+				bottomPanel.add(exitButton);
 				add(bottomPanel, BorderLayout.SOUTH);
 
 				JPanel addProductPanel_Main = new JPanel();
@@ -87,12 +97,15 @@ public class EmployeePanel extends JPanel {
 
 				boxes = new JComboBox();
 				boxes.addItem("");
+				for(Product p : supermarket.products.values()){
+                    boxes.addItem(p.name);
+                }
 			
 				addProductPanel_Right.add(boxes);
 
-				spinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+				spinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
 				spinner.setEditor(new JSpinner.DefaultEditor(spinner));
-				spinner.setEnabled(false);
+				spinner.setEnabled(true);
 				addProductPanel_Right.add(spinner);
 
 				JPanel pricePanel = new JPanel();
@@ -128,8 +141,6 @@ public class EmployeePanel extends JPanel {
 				currentOrderPanel.setLayout(new BorderLayout());
 				currentOrderPanel.add(scrollPane, BorderLayout.NORTH);
 
-				
-
 				boxes.addItemListener(new ItemListener() {
 
 					public void itemStateChanged(ItemEvent e) {
@@ -145,11 +156,16 @@ public class EmployeePanel extends JPanel {
 						}
 
 						unitPrice = 0;
+						for(Product p : supermarket.products.values()){
+						    if(itemName.equalsIgnoreCase(p.name)) {
+                                unitPrice += p.price;
+                                supermarket.addToBank(p.price - p.cost);
+                            }
+                        }
 						
 						priceLabel.setText(String.format("%.2f", unitPrice) + " TL");
 
 					}
-
 				});
 
 				spinner.addChangeListener(new ChangeListener() {
@@ -159,12 +175,8 @@ public class EmployeePanel extends JPanel {
 						count = (int) spinner.getValue();
 						price = unitPrice * count;
 						priceLabel.setText(String.format("%.2f", price) + " TL");
-
 					}
-
 				});
-
-			
 
 				addButton.addActionListener(new ActionListener() {
 
@@ -172,18 +184,32 @@ public class EmployeePanel extends JPanel {
 
 					public void actionPerformed(ActionEvent e) {
 
-						
-
-
-						model.addRow(row);
-
+					    for(Product p : supermarket.products.values()){
+					        if(itemName.equalsIgnoreCase(p.name)){
+					            if (p.amount != 0){
+					                if(p.amount - count < 0){
+					                    JOptionPane.showMessageDialog(null,"You can sell only "+p.amount+" of this item.");
+                                    }else {
+                                        p.amount -= count;
+                                        row[0] = itemName;
+                                        row[1] = new Integer(count);
+                                        row[2] = new Double(count * p.price);
+                                        for (int i = 0; i < count; i++) {
+                                            totalPrice += p.price;
+                                        }
+                                        model.addRow(row);
+                                        finalizeButton.setEnabled(true);
+                                    }
+                                }else {
+					                JOptionPane.showMessageDialog(null, "We are out of this item.");
+                                }
+                            }
+                        }
 					}
 
 				});
 
 				finalizeButton.addActionListener(new ActionListener() {
-
-					double totalPrice = 0;
 
 					public void actionPerformed(ActionEvent e) {
 
@@ -191,18 +217,231 @@ public class EmployeePanel extends JPanel {
 								+ String.format("%.2f", totalPrice) + " TL");
 
 						removeAll();
-
 						setLayout(new FlowLayout());
-						add(saleButton);
-
-						repaint();
-
+						add(buttonsPanel);
+						buttonsPanel.setVisible(true);
+                        repaint();
+                        totalPrice = 0;
 					}
-
 				});
 
+                exitButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        removeAll();
+                        setLayout(new FlowLayout());
+                        add(buttonsPanel);
+                        buttonsPanel.setVisible(true);
+                        repaint();
+                    }
+                });
 			}
 		});
 
+		listProductsButton.addActionListener(new ActionListener() {
+		    @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                buttonsPanel.setVisible(false);
+                setLayout(new BorderLayout());
+
+                exitButton = new JButton("Close");
+                JPanel bottomPanel = new JPanel();
+                bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+                exitButton.setEnabled(true);
+                bottomPanel.add(exitButton);
+                add(bottomPanel, BorderLayout.SOUTH);
+
+                String[] columnNames = { "Product Name", "Product ID", "Cost", "Price", "Type", "Amount"};
+
+                JPanel currentPanel_Main = new JPanel();
+                add(currentPanel_Main, BorderLayout.CENTER);
+                currentPanel_Main.setLayout(new BorderLayout());
+                currentPanel_Main.add(new JLabel(""), BorderLayout.NORTH);
+
+                JPanel currentPanel = new JPanel();
+                currentPanel_Main.add(currentPanel, BorderLayout.CENTER);
+                currentPanel.setLayout(new BorderLayout());
+
+		        table = new JTable();
+                DefaultTableModel model = new DefaultTableModel();
+                model.setColumnIdentifiers(columnNames);
+                table.setModel(model);
+                table.setPreferredScrollableViewportSize(new Dimension(600, 400));
+                table.setEnabled(false);
+                table.setFillsViewportHeight(true);
+                JScrollPane scrollPane = new JScrollPane(table);
+                currentPanel.setLayout(new BorderLayout());
+                currentPanel.add(scrollPane, BorderLayout.NORTH);
+
+                Object[] row = new Object[6];
+
+                for(Product p : supermarket.sortedProducts.values()) {
+                    row[0] = p.name;
+                    row[1] = new Integer(p.ID);
+                    row[2] = new Double(p.cost);
+                    row[3] = new Double(p.price);
+                    row[4] = p.type;
+                    row[5] = new Integer(p.amount);
+                    model.addRow(row);
+                }
+
+                exitButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        removeAll();
+                        setLayout(new FlowLayout());
+                        add(buttonsPanel);
+                        buttonsPanel.setVisible(true);
+                        repaint();
+                    }
+                });
+            }
+        });
+
+		searchProductButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                Object[] possibleValues = { "By Name","By ID","By Type"};
+                Object selectedValue = JOptionPane.showInputDialog(null,
+                        "Choose one", "Input",
+                        JOptionPane.INFORMATION_MESSAGE, null,
+                        possibleValues, possibleValues[0]);
+
+                buttonsPanel.setVisible(false);
+                setLayout(new BorderLayout());
+
+                JPanel topPanel = new JPanel();
+                add(topPanel, BorderLayout.NORTH);
+                topPanel.setLayout(new GridLayout(1, 2));
+                JPanel leftPanel = new JPanel();
+                topPanel.add(leftPanel);
+                JPanel rightPanel = new JPanel();
+                topPanel.add(rightPanel);
+
+                leftPanel.setLayout(new GridLayout(3, 1));
+                if(Objects.equals(selectedValue, possibleValues[0])){
+                    leftPanel.add(new JLabel("Name: "));
+                }else if(Objects.equals(selectedValue, possibleValues[1])){
+                    leftPanel.add(new JLabel("ID: "));
+                }else if(Objects.equals(selectedValue, possibleValues[2])){
+                    leftPanel.add(new JLabel("Type: "));
+                }
+
+                rightPanel.setLayout(new GridLayout(3, 1));
+                JTextField nameText = new JTextField();
+                rightPanel.add(nameText);
+                JButton searchButton = new JButton("Search");
+                rightPanel.add(searchButton);
+
+                exitButton = new JButton("Exit");
+                JPanel bottomPanel = new JPanel();
+                bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+                exitButton.setEnabled(true);
+                bottomPanel.add(exitButton);
+                add(bottomPanel, BorderLayout.SOUTH);
+
+                searchButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+
+                        leftPanel.setVisible(false);
+                        rightPanel.setVisible(false);
+                        topPanel.setVisible(false);
+                        bottomPanel.setVisible(false);
+
+                        setLayout(new BorderLayout());
+
+                        String[] columnNames = { "Product Name", "Product ID", "Cost", "Price", "Type", "Amount"};
+
+                        JPanel currentPanel_Main = new JPanel();
+                        add(currentPanel_Main, BorderLayout.CENTER);
+                        currentPanel_Main.setLayout(new BorderLayout());
+                        currentPanel_Main.add(new JLabel(""), BorderLayout.NORTH);
+
+                        JPanel currentPanel = new JPanel();
+                        currentPanel_Main.add(currentPanel, BorderLayout.CENTER);
+                        currentPanel.setLayout(new BorderLayout());
+
+                        table = new JTable();
+                        DefaultTableModel model = new DefaultTableModel();
+                        model.setColumnIdentifiers(columnNames);
+                        table.setModel(model);
+                        table.setPreferredScrollableViewportSize(new Dimension(600, 400));
+                        table.setEnabled(false);
+                        table.setFillsViewportHeight(true);
+                        JScrollPane scrollPane = new JScrollPane(table);
+                        currentPanel.setLayout(new BorderLayout());
+                        currentPanel.add(scrollPane, BorderLayout.NORTH);
+
+                        exitButton = new JButton("Exit");
+                        JPanel bottomPanel = new JPanel();
+                        bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+                        exitButton.setEnabled(true);
+                        bottomPanel.add(exitButton);
+                        add(bottomPanel, BorderLayout.SOUTH);
+
+                        Object[] row = new Object[6];
+
+                        for(Product p : supermarket.sortedProducts.values()) {
+                            if(Objects.equals(selectedValue, possibleValues[0])){
+                                if(nameText.getText().equalsIgnoreCase(p.name)){
+                                    row[0] = p.name;
+                                    row[1] = new Integer(p.ID);
+                                    row[2] = new Double(p.cost);
+                                    row[3] = new Double(p.price);
+                                    row[4] = new String(p.type);
+                                    row[5] = new Integer(p.amount);
+                                    model.addRow(row);
+                                }
+                            }else if(Objects.equals(selectedValue, possibleValues[1])){
+                                if(nameText.getText().equalsIgnoreCase(Integer.toString(p.ID))){
+                                    row[0] = p.name;
+                                    row[1] = new Integer(p.ID);
+                                    row[2] = new Double(p.cost);
+                                    row[3] = new Double(p.price);
+                                    row[4] = p.type;
+                                    row[5] = new Integer(p.amount);
+                                    model.addRow(row);
+                                }
+                            }else {
+                                if(nameText.getText().equalsIgnoreCase(p.type)){
+                                    row[0] = p.name;
+                                    row[1] = new Integer(p.ID);
+                                    row[2] = new Double(p.cost);
+                                    row[3] = new Double(p.price);
+                                    row[4] = new String(p.type);
+                                    row[5] = new Integer(p.amount);
+                                    model.addRow(row);
+                                }
+                            }
+                        }
+
+                        exitButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent actionEvent) {
+                                removeAll();
+                                setLayout(new FlowLayout());
+                                add(buttonsPanel);
+                                buttonsPanel.setVisible(true);
+                                repaint();
+                            }
+                        });
+                    }
+                });
+
+                exitButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        removeAll();
+                        setLayout(new FlowLayout());
+                        add(buttonsPanel);
+                        buttonsPanel.setVisible(true);
+                        repaint();
+                    }
+                });
+            }
+        });
 	}
 }

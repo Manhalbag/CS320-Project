@@ -1,5 +1,7 @@
 package GUI;
 
+import Model.Supermarket;
+
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
@@ -15,7 +17,7 @@ public class Gui {
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	public static void Gui(int type) {
+	public static void startGui(Supermarket market, int type) {
 		
 		
 		JFrame frame = new JFrame("Supermarket Management System");
@@ -25,11 +27,11 @@ public class Gui {
 		frame.setMinimumSize(new Dimension(650, 500));
 		
 		if(type==0) {
-			JPanel managerPanel = new ManagerPanel();
+			JPanel managerPanel = new ManagerPanel(market);
 			frame.getContentPane().add(managerPanel);
 		}
 		else {
-			JPanel employeePanel = new EmployeePanel();
+			JPanel employeePanel = new EmployeePanel(market);
 			frame.getContentPane().add(employeePanel);
 		}
 		

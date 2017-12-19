@@ -1,26 +1,24 @@
 package GUI;
-
+import Model.Employee;
+import Model.Manager;
+import Model.Product;
+import Model.Supermarket;
 import java.awt.EventQueue;
 
-import javax.swing.JFrame;
-import javax.swing.JButton;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Font;
-import javax.swing.SwingConstants;
-import javax.swing.JTextField;
+import java.util.TreeMap;
 
 public class Login {
 
 	private JFrame frmSupermarketManagementSystem;
 	private JTextField txtId;
-	private String [] names = {"manhal","berk"};
+	private String [] managers = {"manhal","berk"};
 	/**
 	 * Launch the application.
 	 */
@@ -48,37 +46,55 @@ public class Login {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+        Supermarket market = new Supermarket();
+        Product a = new Product("Chocolate", 1,0.3,1.2,"food",5);
+        Product b = new Product("Milk", 2,0.5,1.5,"beverage",10);
+        Product c = new Product("Bleach", 3,1.1,3.5,"utilities",2);
+        Product d = new Product("Chicken",4, 1,5,"food",12);
+
+        Employee x = new Manager(1, "Ali", "09:00-17:00", 5000.00, "Manager");
+        Manager t = new Manager(2, "Murat", "10:00-18:00", 4600.00, "Manager");
+        Employee v = new Employee(3, "Süreyya", "10:00-18:00", 2600.00, "Employee");
+        market.products.put(1, a);
+        market.products.put(2, b);
+        market.products.put(3, c);
+        market.products.put(4, d);
+        market.employees.add(x);
+        market.employees.add(t);
+        market.employees.add(v);
+        market.sortProducts();
+
 		frmSupermarketManagementSystem = new JFrame();
 		frmSupermarketManagementSystem.setTitle("Supermarket Management System");
 		frmSupermarketManagementSystem.setBounds(100, 100, 570, 340);
 		frmSupermarketManagementSystem.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JButton btnLogin = new JButton("Login");
+//        JRadioButton checkTitle = new JRadioButton("I am a Manager.");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Boolean isMatched = false;
-		    		for(int i=0; i<names.length; i++) {
-		    			if( txtId.getText().equals(names[i])) {
+		    		for(int i=0; i<managers.length; i++) {
+		    			if( txtId.getText().equalsIgnoreCase(managers[i])) {
 		    				isMatched = true;
 		    			}
 		    		}
 		    		
 		    		if(isMatched) {
 	    				frmSupermarketManagementSystem.setVisible(false);
-		    			Boolean isManager = false;
+		    			Boolean isManager = true;
 		    			//use Gui to 0
 		    			if(isManager) {
 		    				Gui n = new Gui();
 		    				//The passed attribute must be changed when integrating the backend part of the code. 
-		    				n.Gui(0);
+		    				n.startGui(market,0);
 		    			}
 		    			//use Gui to 1
 		    			else {
 		    				Gui n = new Gui();
 		    				//The passed attribute must be changed when integrating the backend part of the code. 
-		    				n.Gui(1);
+		    				n.startGui(market,1);
 		    			}
-		    			
 		    		}
 		    		else {
 		    			JOptionPane.showMessageDialog(frmSupermarketManagementSystem,
@@ -87,7 +103,6 @@ public class Login {
 		    				    JOptionPane.ERROR_MESSAGE);
 		    			txtId.setText("");
 		    		}
-				
 			}
 		});
 		
