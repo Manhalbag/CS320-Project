@@ -685,19 +685,19 @@ public class ManagerPanel extends JPanel {
 		        		textRevenue = new JTextField();
 		        		textRevenue.setEditable(false);
 		        		textRevenue.setColumns(10);
-		        		textRevenue.setText(""+revenue);
+		        		textRevenue.setText(""+revenue+"  TL");
 
 		        		
 		        		textCost = new JTextField();
 		        		textCost.setEditable(false);
 		        		textCost.setColumns(10);
-		        		textCost.setText(""+cost);
+		        		textCost.setText(""+cost+"  TL");
 
 		        		
 		        		textProfit = new JTextField();
 		        		textProfit.setEditable(false);
 		        		textProfit.setColumns(10);
-		        		textProfit.setText(""+profit);
+		        		textProfit.setText(""+profit+"  TL");
 
 		        		
 		        		currentPanel.add(lblProductsSold);

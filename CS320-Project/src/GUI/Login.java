@@ -8,6 +8,11 @@ import java.awt.EventQueue;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -45,46 +50,69 @@ public class Login {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
-        Supermarket market = new Supermarket();
-        Product a = new Product("Chocolate", 1,0.3,1.2,"food",5);
-        Product b = new Product("Milk", 2,0.5,1.5,"beverage",10);
-        Product c = new Product("Bleach", 3,1.1,3.5,"utilities",2);
-        Product d = new Product("Chicken",4, 1,5,"food",12);
+    String managerName;
 
-        Employee x = new Employee(1, "Ali", "09:00-17:00", 5000.00, "Employee");
-        Manager t = new Manager(2, "Murat", "10:00-18:00", 4600.00, "Manager");
-        Employee v = new Employee(3, "Süreyya", "10:00-18:00", 2600.00, "Employee");
-        market.products.put(1, a);
-        market.products.put(2, b);
-        market.products.put(3, c);
-        market.products.put(4, d);
-        market.employees.add(x);
-        market.employees.add(t);
-        market.employees.add(v);
+	private void initialize() {
+		
+        Supermarket market = new Supermarket();
+        
+	    try {
+    		
+			Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/SMS","root","");
+			
+			Statement command = connection.createStatement();
+			
+			ResultSet data = command.executeQuery("SELECT * FROM Products");
+			
+			int count=1;
+			while(data.next()) {
+				market.products.put(count,new Product(data.getString("name"),data.getInt("ID"),data.getDouble("cost"),data.getDouble("price"),data.getString("type"),data.getInt("amount")));
+				count++;
+			}
+			
+			data = command.executeQuery("SELECT * FROM Employees");
+			while(data.next()) {
+				if(data.getInt("ID")!=1) {
+					market.employees.add(new Employee(data.getInt("ID"), data.getString("name"), data.getString("shift"), data.getDouble("salary"), data.getString("title")));
+				}
+				else {
+					market.employees.add(new Manager(data.getInt("ID"), data.getString("name"), data.getString("shift"), data.getDouble("salary"), data.getString("title")));
+				}
+			}
+			
+			data = command.executeQuery("SELECT * FROM Employees WHERE id=1");
+			while(data.next()) {
+				managerName = data.getString("name");
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
         market.sortProducts();
+
 
 		frmSupermarketManagementSystem = new JFrame();
 		frmSupermarketManagementSystem.setTitle("Supermarket Management System");
 		frmSupermarketManagementSystem.setBounds(100, 100, 570, 340);
 		frmSupermarketManagementSystem.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		String [] people = {t.name, x.name,v.name};
 		
 		JButton btnLogin = new JButton("Login");
-//        JRadioButton checkTitle = new JRadioButton("I am a Manager.");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Boolean isMatched = false;
 				Boolean isManager = false;
-		    		for(int i=0; i<people.length; i++) {
-		    			if(txtId.getText().equalsIgnoreCase(people[i])) {
-		    				isMatched = true;
-		    				if(txtId.getText().equalsIgnoreCase(t.name)){
+				
+				for(Employee emp : market.employees) {
+					if(txtId.getText().equalsIgnoreCase(emp.name)) {
+	    					isMatched = true;
+		    				if(txtId.getText().equalsIgnoreCase(managerName)){
 		    					isManager = true;
 		    				}
-		    			}
-		    		}
+	    				}
+				}
+		    	
 		    		
 		    		if(isMatched) {
 	    				frmSupermarketManagementSystem.setVisible(false);
